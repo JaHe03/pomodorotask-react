@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 from pathlib import Path
 
 load_dotenv()
@@ -31,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'account',
+    'apps.account',
 ]
 
 MIDDLEWARE = [
@@ -100,6 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# auth user model 
+AUTH_USER_MODEL = 'account.CustomUser'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -128,13 +132,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # rest_framework settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token validity
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Refresh token validity
+    'ROTATE_REFRESH_TOKENS': True,                  # Rotate refresh tokens
+    'BLACKLIST_AFTER_ROTATION': True,               # Blacklist old tokens
 }
 
 
