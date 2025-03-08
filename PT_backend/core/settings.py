@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'apps.account',
     'apps.tasks',
+    'apps.pomodoro',
 ]
 
 MIDDLEWARE = [
