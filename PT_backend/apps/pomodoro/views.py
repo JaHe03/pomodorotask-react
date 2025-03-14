@@ -8,4 +8,13 @@ class PomodoroSettingsView(generics.RetrieveUpdateAPIView):
     serializer_class = PomodoroSettingsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_
+    def get_object(self):
+        user = self.request.user
+        obj, created = PomodoroSettings.objects.get_or_create(user=user)
+        if created:
+            print('created new settings')
+        return obj
+
+    
+
+
