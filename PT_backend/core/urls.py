@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('apps.account.urls')),
     path('api/tasks/', include('apps.tasks.urls')),
+    path('api/pomodoro/', include('apps.pomodoro.urls')),
 ]
