@@ -1,11 +1,13 @@
 import React from 'react';
+import Tasks from '../components/tasks';
 
-function Home() {
+const Home = () => {
   return (
-    <div>
-      <h1>Home</h1>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold mb-4">Home Page</h1>
+      <Tasks />
     </div>
   );
-}   
+};
 
 export default Home;
