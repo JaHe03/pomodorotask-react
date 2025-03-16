@@ -3,12 +3,12 @@ import api from "../api";
 
 const TaskForm = ({ fetchTasks }) => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
 
   const createTask = async (e) => {
     e.preventDefault();
-    if (!title || !description) {
+    if (!title || !text) {
       alert("Please fill out all fields!");
       return;
     }
@@ -16,9 +16,9 @@ const TaskForm = ({ fetchTasks }) => {
     setLoading(true);
 
     try {
-      await api.post("api/tasks/", { title, description });
+      await api.post("api/tasks/", { title, text });
       fetchTasks();
-      setDescription("");
+      setText("");
       setTitle("");
     } catch (error) {
       console.error("Error creating task:", error);
@@ -43,9 +43,9 @@ const TaskForm = ({ fetchTasks }) => {
         className="w-full border rounded-md p-2 mt-4"
       />
       <textarea // css
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
         className="w-full border rounded-md p-2 mt-4"
       />
       <button
@@ -74,7 +74,7 @@ const TaskList = ({ tasks, fetchTasks }) => {
         <li key={task.id} className="border p-2 my-2 flex justify-between">
           <div>
             <h3 className="font-bold">{task.title}</h3>
-            <p>{task.description}</p>
+            <p className="text-gray-600">{task.text}</p>
           </div>
           <button
             onClick={() => deleteTask(task.id)}
