@@ -1,88 +1,245 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import api from "../api";
 
-function SettingsBar() {
-  const [settings, setSettings] = useState({
-    theme: "light",
-    sound: "alarm",
-    autoStart: "false",
-    sessionStatus: "active",
-    pomodoroTime: 25,
-    shortBreakTime: 5,
-    longBreakTime: 15,
-    longBreakAfter: 4,
-  });
+const SettingsBar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [pomodoroMinutes, setPomodoroMinutes] = useState(25);
+  const [pomodoroSeconds, setPomodoroSeconds] = useState(0);
+  const [shortBreakMinutes, setShortBreakMinutes] = useState(5);
+  const [shortBreakSeconds, setShortBreakSeconds] = useState(0);
+  const [longBreakMinutes, setLongBreakMinutes] = useState(15);
+  const [longBreakSeconds, setLongBreakSeconds] = useState(0);
+  const [longBreakAfterLimit, setLongBreakAfterLimit] = useState(4);
+  const [theme, setTheme] = useState("Light");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const sidebarRef = useRef(null);
 
+  // Fetch settings when component mounts
   useEffect(() => {
-    fetch("/api/pomodoro/settings")
-      .then((response) => response.json())
-      .then((data) => setSettings(data))
-      .catch((error) => console.error("Error fetching settings:", error));
+    fetchSettings();
   }, []);
 
+  // Handle clicks outside the sidebar to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
+        // Only close if the click is not on the open settings button
+        if (!event.target.closest(".open-settings-btn")) {
+          setIsOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/api/pomodoro/settings/");
+      const settings = response.data;
+
+      // Update state with fetched settings
+      setPomodoroMinutes(settings.pomodoro_minutes);
+      setPomodoroSeconds(settings.pomodoro_seconds);
+      setShortBreakMinutes(settings.short_break_minutes);
+      setShortBreakSeconds(settings.short_break_seconds);
+      setLongBreakMinutes(settings.long_break_minutes);
+      setLongBreakSeconds(settings.long_break_seconds);
+      setLongBreakAfterLimit(settings.long_break_after_limit);
+      setTheme(settings.theme);
+
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching settings:", err);
+      setError("Failed to load settings");
+      setLoading(false);
+    }
+  };
+
+  const saveSettings = async () => {
+    try {
+      setLoading(true);
+      await api.put("/api/pomodoro/settings/", {
+        pomodoro_minutes: pomodoroMinutes,
+        pomodoro_seconds: pomodoroSeconds,
+        short_break_minutes: shortBreakMinutes,
+        short_break_seconds: shortBreakSeconds,
+        long_break_minutes: longBreakMinutes,
+        long_break_seconds: longBreakSeconds,
+        long_break_after_limit: longBreakAfterLimit,
+        theme: theme,
+      });
+      setLoading(false);
+
+      // Apply theme change
+      document.body.dataset.theme = theme.toLowerCase();
+    } catch (err) {
+      console.error("Error saving settings:", err);
+      setError("Failed to save settings");
+      setLoading(false);
+    }
+  };
+
+  const toggleSettings = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleClose = () => {
+    saveSettings();
+    setIsOpen(false);
+  };
+
   return (
-    <div className="settings-bar">
-      <h2>Settings</h2>
-      <form>
-        <div className="form-group">
-          <label htmlFor="theme">Theme</label>
-          <select id="theme" name="theme" value={settings.theme} onChange={(e) => setSettings({ ...settings, theme: e.target.value })}>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-          </select>
+    <div className="relative">
+      {/* Settings Button */}
+      <button
+        className="fixed top-5 right-5 bg-[#2c6152] text-white py-2 px-4 rounded hover:bg-[#2a7a67] z-40 open-settings-btn"
+        onClick={toggleSettings}
+      >
+        Open Settings
+      </button>
+
+      {/* Settings Sidebar */}
+      <div
+        ref={sidebarRef}
+        className={`fixed top-0 right-0 h-full w-[350px] bg-[#3a3b45] text-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="p-5">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Settings</h2>
+            <button
+              onClick={handleClose}
+              className="bg-[#2a2a35] text-white w-8 h-8 rounded flex items-center justify-center hover:bg-[#222230]"
+            >
+              x
+            </button>
+          </div>
+
+          <div className="flex gap-3 mb-6">
+            <button
+              onClick={saveSettings}
+              className="bg-[#2c6152] text-white py-2 px-6 rounded hover:bg-[#2a7a67]"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save"}
+            </button>
+            <button className="flex-1 bg-[#2c6152] text-white py-2 px-4 rounded hover:bg-[#2a7a67]">
+              Log out
+            </button>
+          </div>
+
+          {error && (
+            <div className="bg-red-500 text-white p-3 mb-4 rounded">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-5">
+            <div className="flex items-center flex-wrap gap-2">
+              <label className="min-w-[160px]">
+                Pomodoro Length (Minutes):
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="60"
+                value={pomodoroMinutes}
+                onChange={(e) => setPomodoroMinutes(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+              <label>Seconds:</label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={pomodoroSeconds}
+                onChange={(e) => setPomodoroSeconds(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <label className="min-w-[160px]">Break Length (Minutes):</label>
+              <input
+                type="number"
+                min="1"
+                max="30"
+                value={shortBreakMinutes}
+                onChange={(e) => setShortBreakMinutes(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+              <label>Seconds:</label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={shortBreakSeconds}
+                onChange={(e) => setShortBreakSeconds(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <label className="min-w-[160px]">
+                Long Break Length (Minutes):
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="60"
+                value={longBreakMinutes}
+                onChange={(e) => setLongBreakMinutes(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+              <label>Seconds:</label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={longBreakSeconds}
+                onChange={(e) => setLongBreakSeconds(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="min-w-[160px]">Long Break Interval:</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={longBreakAfterLimit}
+                onChange={(e) => setLongBreakAfterLimit(Number(e.target.value))}
+                className="bg-[#2c6152] text-white rounded p-2 w-full text-center"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="min-w-[160px]">Theme:</label>
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                className="bg-[#2c6152] text-white rounded p-2 w-32"
+              >
+                <option value="Light">Light</option>
+                <option value="Dark">Dark</option>
+              </select>
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end"></div>
         </div>
-        <div className="form-group">
-          <label htmlFor="sound">Sound</label>
-          <select id="sound" name="sound" value={settings.sound} onChange={(e) => setSettings({ ...settings, sound: e.target.value })}>
-            <option value="alarm">Alarm</option>
-            <option value="melody">Melody</option>
-            <option value="chime">Chime</option>
-            <option value="silence">Silence</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="auto-start">Auto Start</label>
-          <select id="auto-start" name="auto-start" value={settings.autoStart} onChange={(e) => setSettings({ ...settings, autoStart: e.target.value })}>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="session-status">Session Status</label>
-          <select id="session-status" name="session-status" value={settings.sessionStatus} onChange={(e) => setSettings({ ...settings, sessionStatus: e.target.value })}>
-            <option value="active">Active</option>
-            <option value="paused">Paused</option>
-            <option value="stopped">Stopped</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="pomodoro-time">Pomodoro Time (minutes)</label>
-          <input type="number" id="pomodoro-time" name="pomodoro-time" min="0" value={settings.pomodoroTime} onChange={(e) => setSettings({ ...settings, pomodoroTime: e.target.value })} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="short-break-time">Short Break Time (minutes)</label>
-          <input type="number" id="short-break-time" name="short-break-time" min="0" value={settings.shortBreakTime} onChange={(e) => setSettings({ ...settings, shortBreakTime: e.target.value })} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="long-break-time">Long Break Time (minutes)</label>
-          <input type="number" id="long-break-time" name="long-break-time" min="0" value={settings.longBreakTime} onChange={(e) => setSettings({ ...settings, longBreakTime: e.target.value })} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="long-break-after">Long Break After (sessions)</label>
-          <input type="number" id="long-break-after" name="long-break-after" min="1" value={settings.longBreakAfter} onChange={(e) => setSettings({ ...settings, longBreakAfter: e.target.value })} />
-        </div>
-      </form>
-      <div className="auth-buttons">
-        <Link to="/Login">
-          <button type="button">Login</button>
-        </Link>
-        <Link to="/register">
-          <button type="button">Sign Up</button>
-        </Link>
       </div>
     </div>
   );
-}
+};
 
 export default SettingsBar;
