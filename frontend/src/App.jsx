@@ -6,7 +6,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register"; 
 import ProtectedRoutes from "./components/ProtectedRoutes"; 
 
-
 function Logout() {
   localStorage.clear();
   return <Navigate to="/login" />;
