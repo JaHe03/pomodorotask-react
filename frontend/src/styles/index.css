@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+/* src/index.css or src/App.css */
+
+:root {
+    /* Default variables (light theme) */
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #e9ecef;
+    --bg-button: #2c6152;
+    --bg-button-hover: #2a7a67;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --bg-sidebar: #f0f2f5;
+    --border-color: #dee2e6;
+  }
+  
+  /* Dark theme variables */
+  body[data-theme="dark"] {
+    --bg-primary: #3a3b45;
+    --bg-secondary: #2a2a35;
+    --bg-button: #2c6152;
+    --bg-button-hover: #2a7a67;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --bg-sidebar: #2a2a35;
+    --border-color: #555555;
+  }
+  
+  /* Apply variables throughout the app */
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  
+  button {
+    background-color: var(--bg-button);
+    color: white;
+  }
+  
+  button:hover {
+    background-color: var(--bg-button-hover);
+  }
+  
+  /* Add more global styles using variables */

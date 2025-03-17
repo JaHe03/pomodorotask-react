@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import api from "../api";
+import { ThemeContext } from "./ThemeContext";
 
 const SettingsBar = () => {
+  const { theme, updateTheme } = useContext(ThemeContext);
   const [isOpen, setIsOpen] = useState(false);
   const [pomodoroMinutes, setPomodoroMinutes] = useState(25);
   const [pomodoroSeconds, setPomodoroSeconds] = useState(0);
@@ -10,7 +12,6 @@ const SettingsBar = () => {
   const [longBreakMinutes, setLongBreakMinutes] = useState(15);
   const [longBreakSeconds, setLongBreakSeconds] = useState(0);
   const [longBreakAfterLimit, setLongBreakAfterLimit] = useState(4);
-  const [theme, setTheme] = useState("Light");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const sidebarRef = useRef(null);
@@ -55,7 +56,8 @@ const SettingsBar = () => {
       setLongBreakMinutes(settings.long_break_minutes);
       setLongBreakSeconds(settings.long_break_seconds);
       setLongBreakAfterLimit(settings.long_break_after_limit);
-      setTheme(settings.theme);
+      updateTheme(settings.theme);
+
 
       setLoading(false);
     } catch (err) {
@@ -76,14 +78,12 @@ const SettingsBar = () => {
         long_break_minutes: longBreakMinutes,
         long_break_seconds: longBreakSeconds,
         long_break_after_limit: longBreakAfterLimit,
-        theme: theme,
+        theme: theme.toLowerCase(),
       });
       setLoading(false);
-
-      // Apply theme change
-      document.body.dataset.theme = theme.toLowerCase();
     } catch (err) {
       console.error("Error saving settings:", err);
+      console.error('Error details:', err.response?.data);
       setError("Failed to save settings");
       setLoading(false);
     }
@@ -227,11 +227,11 @@ const SettingsBar = () => {
               <label className="min-w-[160px]">Theme:</label>
               <select
                 value={theme}
-                onChange={(e) => setTheme(e.target.value)}
+                onChange={(e) => updateTheme(e.target.value)}
                 className="bg-[#2c6152] text-white rounded p-2 w-32"
               >
-                <option value="Light">Light</option>
-                <option value="Dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
               </select>
             </div>
           </div>
