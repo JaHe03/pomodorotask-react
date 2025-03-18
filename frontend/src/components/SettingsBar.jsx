@@ -98,11 +98,16 @@ const SettingsBar = () => {
     setIsOpen(false);
   };
 
+  const logOut = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
   return (
     <div className="relative">
       {/* Settings Button */}
       <button
-        className="fixed top-5 right-5 bg-[#2c6152] text-white py-2 px-4 rounded hover:bg-[#2a7a67] z-40 open-settings-btn"
+        className="fixed top-5 right-5 bg-[var(--bg-button)] text-white py-2 px-4 rounded hover:bg-[var(--bg-button-hover)] z-40 open-settings-btn"
         onClick={toggleSettings}
       >
         Open Settings
@@ -111,14 +116,14 @@ const SettingsBar = () => {
       {/* Settings Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 right-0 h-full w-[350px] bg-[#3a3b45] text-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 h-full w-[350px] bg-[var(--bg-sidebar)] text-[var(--text-primary)] shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="p-5">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Settings</h2>
             <button
               onClick={handleClose}
-              className="bg-[#2a2a35] text-white w-8 h-8 rounded flex items-center justify-center hover:bg-[#222230]"
+              className="bg-[var(--bg-button)] text-white w-8 h-8 rounded flex items-center justify-center hover:bg-[var(--bg-button-hover)]"
             >
               x
             </button>
@@ -127,12 +132,15 @@ const SettingsBar = () => {
           <div className="flex gap-3 mb-6">
             <button
               onClick={saveSettings}
-              className="bg-[#2c6152] text-white py-2 px-6 rounded hover:bg-[#2a7a67]"
+              className="bg-[var(--bg-button)] text-white py-2 px-6 rounded hover:bg-[var(--bg-button-hover)]"
               disabled={loading}
             >
               {loading ? "Saving..." : "Save"}
             </button>
-            <button className="flex-1 bg-[#2c6152] text-white py-2 px-4 rounded hover:bg-[#2a7a67]">
+            <button 
+              className="flex-1 bg-[var(--bg-button)] text-white py-1 px-4 rounded hover:bg-[var(--bg-button-hover)]"
+              onClick={logOut}  
+            >
               Log out
             </button>
           </div>
@@ -154,7 +162,7 @@ const SettingsBar = () => {
                 max="60"
                 value={pomodoroMinutes}
                 onChange={(e) => setPomodoroMinutes(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
               <label>Seconds:</label>
               <input
@@ -163,7 +171,7 @@ const SettingsBar = () => {
                 max="59"
                 value={pomodoroSeconds}
                 onChange={(e) => setPomodoroSeconds(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
             </div>
 
@@ -175,7 +183,7 @@ const SettingsBar = () => {
                 max="30"
                 value={shortBreakMinutes}
                 onChange={(e) => setShortBreakMinutes(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
               <label>Seconds:</label>
               <input
@@ -184,7 +192,7 @@ const SettingsBar = () => {
                 max="59"
                 value={shortBreakSeconds}
                 onChange={(e) => setShortBreakSeconds(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
             </div>
 
@@ -198,7 +206,7 @@ const SettingsBar = () => {
                 max="60"
                 value={longBreakMinutes}
                 onChange={(e) => setLongBreakMinutes(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
               <label>Seconds:</label>
               <input
@@ -207,7 +215,7 @@ const SettingsBar = () => {
                 max="59"
                 value={longBreakSeconds}
                 onChange={(e) => setLongBreakSeconds(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded w-16 p-2 text-center"
+                className="bg-[var(--bg-button)] text-white rounded w-16 p-2 text-center"
               />
             </div>
 
@@ -219,7 +227,7 @@ const SettingsBar = () => {
                 max="10"
                 value={longBreakAfterLimit}
                 onChange={(e) => setLongBreakAfterLimit(Number(e.target.value))}
-                className="bg-[#2c6152] text-white rounded p-2 w-full text-center"
+                className="bg-[var(--bg-button)] text-white rounded p-2 w-full text-center"
               />
             </div>
 
@@ -228,7 +236,7 @@ const SettingsBar = () => {
               <select
                 value={theme}
                 onChange={(e) => updateTheme(e.target.value)}
-                className="bg-[#2c6152] text-white rounded p-2 w-32"
+                className="bg-[var(--bg-button)] text-white rounded p-2 w-32"
               >
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>

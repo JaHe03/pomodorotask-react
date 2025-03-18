@@ -10,8 +10,7 @@ const Home = () => {
     <ThemeProvider>
       <div>
 
-        <div className="p-4">
-          <h1 className="text-3xl font-bold mb-4">Home Page</h1>
+        <div>
           <Tasks />
         </div>
 
@@ -20,7 +19,6 @@ const Home = () => {
         </div>
         
         <div>
-
           <PomodoroTimer />
         </div>
 

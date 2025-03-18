@@ -159,17 +159,17 @@ const PomodoroTimer = () => {
   const formattedTime = `${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}`;
 
   return (
-    <div className="flex flex-col items-center justify-center text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen text-[var(--text-primary)]">
       <h1 className="text-5xl font-bold mb-4">PomodoroTasks</h1>
-      
+  
       <p className="text-center text-lg mb-10 max-w-lg">
         The Pomodoro technique is a time management method where you set a specific 
         amount of time to work on a task. After the time is up, you take a short break! You 
         repeat this process for a certain number of cycles, followed by a longer break.
       </p>
-      
+  
       <h2 className="text-3xl mb-4">Time to work!</h2>
-      
+  
       <div className="flex gap-4 mb-8">
         <button 
           className={`px-4 py-2 rounded ${timerMode === 'pomodoro' ? 'bg-[#2c6152]' : 'bg-[#3a3b45]'} hover:bg-[#2a7a67]`}
@@ -190,11 +190,11 @@ const PomodoroTimer = () => {
           Long Break
         </button>
       </div>
-      
+  
       <div className="text-8xl font-bold mb-8">
         {formattedTime}
       </div>
-      
+  
       <div className="flex gap-4 mb-10">
         <button 
           className="px-6 py-2 bg-[#2c6152] rounded hover:bg-[#2a7a67]"
@@ -209,7 +209,7 @@ const PomodoroTimer = () => {
           Reset
         </button>
       </div>
-      
+  
       <div className="text-2xl">
         Sessions Completed: {sessionsCompleted}
       </div>

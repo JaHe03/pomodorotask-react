@@ -30,9 +30,9 @@ const TaskForm = ({ fetchTasks }) => {
   return (
     <form
       onSubmit={createTask}
-      className="bg-white shadow-lg rounded-2xl p-8 w-96"
+      className="bg-[var(--bg-primary)] shadow-lg rounded-2xl p-8"
     >
-      <h1 className="text-2xl font-bold text-gray-900 text-center">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] text-center">
         Create Task
       </h1>
       <input
@@ -74,7 +74,7 @@ const TaskList = ({ tasks, fetchTasks }) => {
         <li key={task.id} className="border p-2 my-2 flex justify-between">
           <div>
             <h3 className="font-bold">{task.title}</h3>
-            <p className="text-gray-600">{task.text}</p>
+            <p className="text-[var(--text-primary)]">{task.text}</p>
           </div>
           <button
             onClick={() => deleteTask(task.id)}
@@ -90,6 +90,7 @@ const TaskList = ({ tasks, fetchTasks }) => {
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -104,11 +105,34 @@ const Tasks = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Tasks</h1>
-      <TaskForm fetchTasks={fetchTasks} />
-      <TaskList tasks={tasks} fetchTasks={fetchTasks} />
-    </div>
+    <>
+      {/* Button to Open Sidebar */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed top-5 left-5 bg-[var(--bg-button)] text-white py-2 px-4 rounded hover:bg-[var(--bg-button-hover)] z-10 open-settings-btn"
+      >
+        Open Tasks
+      </button>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-full w-80 z-50 bg-[var(--bg-sidebar)] text-[var(--text-primary)] shadow-lg transform transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-4 flex justify-between items-center border-b">
+          <h2 className="text-lg font-bold">Tasks</h2>
+          <button onClick={() => setIsOpen(false)} className="text-gray-500">
+            ✖
+          </button>
+        </div>
+        <div className="p-4">
+          <TaskForm fetchTasks={fetchTasks} />
+          <TaskList tasks={tasks} fetchTasks={fetchTasks} />
+        </div>
+      </div>
+
+    </>
   );
 };
 
